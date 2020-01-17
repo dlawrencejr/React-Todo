@@ -1,6 +1,8 @@
 import React from 'react';
 import TodoList from './components/TodoComponents/TodoList';
 import TodoForm from './components/TodoComponents/TodoForm';
+import './components/TodoComponents/Todo.css'
+const data = [];
 
 class App extends React.Component {
   // you will need a place to store your state in this component.
@@ -9,10 +11,12 @@ class App extends React.Component {
   constructor(){
     super();
     this.state ={
-      todoData: []
+      todoData: data,
+      text:''
     };
 
   }
+
   addItem = item =>{
     const newItem={
       task:item,
@@ -21,37 +25,64 @@ class App extends React.Component {
     };
     this.setState({todoData:[...this.state.todoData,newItem]});
   };
-  CompletedToggle=(event)=>{
-    this.setState({
-      todoData:this.state.todoData.map((item)=>{
-        if(item.id===event.id){
+
+ toggleItems = id => {
+    const newTodoData = this.state.todoData.map(item=>{
+        if(item.id===id){
           return{
             ...item,
             completed:!item.completed
-          }
+          };
         }
         else{
           return item;
         }
-      })
-    })
-  }
+      });
+      this.setState({
+        todoData:newTodoData
+      });
+    };
+  
   clearCompleted=()=>{
     this.setState({
-      todoData:this.state.todoData.filter(item=>{
-        return item.completed === false;
-      })
-    });
-  };
+      todoData:this.state.todoData.filter(item=>
+       
+        !item.completed)
+
+      });
+    };
+  
+    handleChange = event => {
+      this.setState({
+        text: event.target.value
+      });
+    };
+
+    handleSubmit = event =>{
+      event.preventDefault();
+      this.addItem(this.state.text);
+    };
 
   render() {
     return (
-      <div>
-        <h2>Welcome to your Todo App!</h2>
-        <TodoList todoData={this.state.todoData} clearCompleted={this.clearCompleted} completedToggle={this.CompletedToggle}/>
-        <TodoForm addItem={this.addItem}/>
+     <div className='App'>
+       <div className='header'>
+         <h1>Todo List!</h1>
+       </div>
+       <div className='form'>
+         <TodoForm
+          addItem={this.addItem}
+          handleChange={this.handleChange}
+          handleSubmit={this.handleSubmit}/>
+          
+        
+        <TodoList 
+        todoData={this.state.todoData} 
+        clearCompleted={this.clearCompleted} 
+        toggleItems={this.toggleItems}/>
+       </div>
+     </div>
 
-      </div>
     );
   }
 }
